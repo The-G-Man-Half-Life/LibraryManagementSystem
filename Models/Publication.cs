@@ -15,9 +15,16 @@ public class Publication
     public DateOnly PublicationYear {get; set;}
 
 
+    private string TextToLowerCase(string? Word)
+    {
+        var LCWord = Word.ToLower();
+        return LCWord;
+    }
+
+
     public Publication(string? Title, DateOnly PublicationYear)
     {
-        this.Title = Title;
+        this.Title = TextToLowerCase(Title);
         this.PublicationYear = PublicationYear;
     }
 }
