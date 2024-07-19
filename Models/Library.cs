@@ -88,6 +88,15 @@ public class Library
 
     public void ShowList()
     {
+        Console.WriteLine(
+@"1.Release date
+2.Title
+3.Author
+4.Price
+");
+
+Console.Write("Ingrese el numero de su opcion deseada: ");
+Console.ReadLine();
         foreach(Book book in Books)
         {
             Console.WriteLine($"Title:{book.Title} Publication Date:{book.PublicationTime.ToString("yyyy/MM/dd")} Author: {book.Author} ISBN: {book.ISBN} Gender: {book.Gender} Price: {book.Price} Description: {book.Description} ");
