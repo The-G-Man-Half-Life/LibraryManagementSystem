@@ -2,9 +2,6 @@
 
 var library = new Library();
 
-// library.AddANewBook();
-
-
 Book book1 = new Book(
     Title: "1984",
     PublicationTime: new DateTime(1949, 6, 8),
@@ -281,4 +278,4 @@ library.Books.Add(book23);
 library.Books.Add(book24);
 library.Books.Add(book25);
 
-library.verifyIfABookIsRecent();
+library.ShoWDescription();
