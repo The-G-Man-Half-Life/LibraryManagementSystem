@@ -16,7 +16,7 @@ public class Library
     }
 
 
-    bool CanItbeADate(string? Date)
+    private bool CanItbeADate(string? Date) 
     {
         DateTime DateOfficial;
         var CanItTurnInADate = DateTime.TryParse(Date, out DateOfficial);
@@ -29,7 +29,7 @@ public class Library
             return false;
         }
     }
-    bool isDouble(string? Number)
+    private bool isDouble(string? Number)
     {
         double number;
         bool doubleAble = double.TryParse(Number, out number);
@@ -79,7 +79,11 @@ public class Library
         }
 
     }
-
+    public bool verifyExistence (string? book)
+    {   bool coincidences = Books.Any(book1=>book1.Title == book);
+        return coincidences;
+    }
+    
     private void betterForEachStructure(List<Book> books)
     {
 Console.WriteLine(@"_______________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -253,7 +257,7 @@ Console.WriteLine(@"|________________________________________|______________|___
     {
         Console.Write("Write down the name of the book: ");
         string? book = Console.ReadLine().ToLower();
-        bool coincidences = Books.Any(book1 => book1.Title == book);
+        bool coincidences = verifyExistence(book);
 
 
         if(string.IsNullOrWhiteSpace(book))
@@ -280,5 +284,31 @@ Console.WriteLine(@"|________________________________________|______________|___
             }
         }
     }
+
+    public void ShoWDescription()
+    {
+        Console.Write("Enter the name of the book");
+        string? book = Console.ReadLine();
+        bool coincidences = verifyExistence(book);
+
+        if(string.IsNullOrWhiteSpace(book))
+        {
+            Console.WriteLine("Write a proper value");
+        }
+        else if (coincidences == false)
+        {
+            Console.WriteLine("The book you are looking for is not in our database");
+        }
+        else
+        {
+            var neededBook = Books.FirstOrDefault(book1=>book1.Title == book);
+            Console.WriteLine(@$"
+Name:{book}
+Description: {neededBook.Description}
+            ");
+        }
+    }
+
+    
 }
 
