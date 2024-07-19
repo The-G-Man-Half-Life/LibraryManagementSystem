@@ -20,7 +20,7 @@ public class Book : Publication
     }
 
 
-    public Book(string? Title,DateOnly PublicationYear,string?Author, string? ISBN, string? Gender, double Price, string? Description): base(Title, PublicationYear)
+    public Book(string? Title,DateTime PublicationTime,string?Author, string? ISBN, string? Gender, double Price, string? Description): base(Title, PublicationTime)
     {
 
         this.Author = TextToLowerCase(Author);
