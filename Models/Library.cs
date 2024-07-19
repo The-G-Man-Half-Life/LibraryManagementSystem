@@ -35,17 +35,54 @@ public class Library
         return string.IsNullOrWhiteSpace(Sentence);
     }
 
-    public void AddANewBook(Book book)
+    bool isDouble(string? Number)
     {
-        Console.Write("Write down the title of the book");
+        double number;
+        bool doubleAble = double.TryParse(Number, out number);
+        return doubleAble;
+    }
+    public void AddANewBook()
+    {
+        Console.Write("Write down the Title of the book: ");
         string? Title = Console.ReadLine();
-
+        bool verificationTitle = isNullOrEmpty(Title);
         
-        Console.Write("Write down the publication date of the book(YYYY/MM/DD)");
+        Console.Write("Write down the publication Date of the book (YYYY/MM/DD): ");
         string? Date = Console.ReadLine();
-        bool VerificationDate1 = CanItbeADate(Date);
+        bool verificationDate = CanItbeADate(Date);
 
-        Console.Write("Write down The name of the author");
+        Console.Write("Write down The Name of the author: ");
+        string?  Author = Console.ReadLine();
+        bool verificationAuthor = isNullOrEmpty(Author);
+
+        Console.Write("Write Down the ISBN of the book: ");
+        string? ISBN = Console.ReadLine();
+        bool verificationISBN = isNullOrEmpty(ISBN);
+
+        Console.Write("Write Down the Gender of the book: ");
+        string? Gender = Console.ReadLine();
+        bool verificationGender = isNullOrEmpty(Gender);
+
+        Console.Write("Write Down the Price of the book: ");
+        string? Price = Console.ReadLine();
+        bool verificationPrice = isDouble(Price);
+
+        Console.Write("Write Down the description of the book: ");
+        string? Description = Console.ReadLine();
+        bool verificationDescription = isNullOrEmpty(Description);
+
+        if(verificationTitle== true || verificationDate==false || verificationAuthor==true || verificationISBN == true ||verificationGender == true || verificationPrice == false || verificationDescription==true)
+        {
+            Console.WriteLine("One of the signed values is uncorrect");
+        }
+        else
+        {
+            DateTime DateNew = Convert.ToDateTime(Date);
+            double PriceNew = Convert.ToDouble(Price);
+
+            Books.Add(new Book(Title,DateNew,Author,ISBN,Gender, PriceNew,Description));
+            Console.WriteLine("The book was added successfully");
+        }
 
     }
 }
