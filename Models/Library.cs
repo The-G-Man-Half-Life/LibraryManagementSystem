@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Numerics;
+using System.Security;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace LibraryManagementSystem.Models;
@@ -17,7 +20,7 @@ public class Library
     }
 
 
-    private bool CanItbeADate(string? Date) 
+    private bool CanItbeADate(string? Date)
     {
         DateTime DateOfficial;
         var CanItTurnInADate = DateTime.TryParse(Date, out DateOfficial);
@@ -28,6 +31,19 @@ public class Library
         else
         {
             return false;
+        }
+    }
+
+    private bool isInrange(double num1, double num2, double num3)
+    {
+        if (num3 < num1 || num3 > num2)
+        {
+            Console.WriteLine("The number written is outside of range");
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
     private bool isDouble(string? Number)
@@ -80,23 +96,24 @@ public class Library
         }
 
     }
-    public bool verifyExistence (string? book)
-    {   bool coincidences = Books.Any(book1=>book1.Title == book);
+    public bool verifyExistence(string? book)
+    {
+        bool coincidences = Books.Any(book1 => book1.Title == book);
         return coincidences;
     }
-    
+
     private void betterForEachStructure(List<Book> books)
     {
-Console.WriteLine(@"_______________________________________________________________________________________________________________________________________________________________________________________________________________________
+        Console.WriteLine(@"_______________________________________________________________________________________________________________________________________________________________________________________________________________________
 |                  Title                 |    R.Date    |          Author            |         ISBN          |         Gender         | Price  |                               Description                             |
 |________________________________________|______________|____________________________|_______________________|________________________|________|_______________________________________________________________________|");
 
-foreach (var book in books)
-{
-    Console.WriteLine(@$"|  {book.Title,-38}|  {book.PublicationTime.ToString("yyyy/MM/dd"),-12}|  {book.Author,-26}|  {book.ISBN,-21}|  {book.Gender,-22}|  {book.Price,-6}|  {book.Description,-69}|");
-}
+        foreach (var book in books)
+        {
+            Console.WriteLine(@$"|  {book.Title,-38}|  {book.PublicationTime.ToString("yyyy/MM/dd"),-12}|  {book.Author,-26}|  {book.ISBN,-21}|  {book.Gender,-22}|  {book.Price,-6}|  {book.Description,-69}|");
+        }
 
-Console.WriteLine(@"|________________________________________|______________|____________________________|_______________________|________________________|________|_______________________________________________________________________|");
+        Console.WriteLine(@"|________________________________________|______________|____________________________|_______________________|________________________|________|_______________________________________________________________________|");
     }
 
     private void ShowReleaseDateByAscendant()
@@ -261,19 +278,19 @@ Console.WriteLine(@"|________________________________________|______________|___
         bool coincidences = verifyExistence(book);
 
 
-        if(string.IsNullOrWhiteSpace(book))
+        if (string.IsNullOrWhiteSpace(book))
         {
             Console.WriteLine("Please write a value");
         }
-        else if(coincidences== false)
+        else if (coincidences == false)
         {
             Console.WriteLine("The book that you are trying to look for is not in our database");
         }
         else
         {
             var FoundBook = Books.FirstOrDefault(book1 => book1.Title == book);
-            int Difference = DateTime.Now.Year - FoundBook.PublicationTime.Year ;
-            bool isRecent = DateTime.Now.Year - FoundBook.PublicationTime.Year  <=5;
+            int Difference = DateTime.Now.Year - FoundBook.PublicationTime.Year;
+            bool isRecent = DateTime.Now.Year - FoundBook.PublicationTime.Year <= 5;
 
             if (isRecent == false)
             {
@@ -292,7 +309,7 @@ Console.WriteLine(@"|________________________________________|______________|___
         string? book = Console.ReadLine();
         bool coincidences = verifyExistence(book);
 
-        if(string.IsNullOrWhiteSpace(book))
+        if (string.IsNullOrWhiteSpace(book))
         {
             Console.WriteLine("Write a proper value");
         }
@@ -302,7 +319,7 @@ Console.WriteLine(@"|________________________________________|______________|___
         }
         else
         {
-            var neededBook = Books.FirstOrDefault(book1=>book1.Title == book);
+            var neededBook = Books.FirstOrDefault(book1 => book1.Title == book);
             Console.WriteLine(@$"
 Name:{book}
 Description: {neededBook.Description}
@@ -316,11 +333,11 @@ Description: {neededBook.Description}
         string? book = Console.ReadLine();
         bool verification = verifyExistence(book);
 
-        if(string.IsNullOrWhiteSpace(book))
+        if (string.IsNullOrWhiteSpace(book))
         {
             Console.WriteLine("You must write a proper value");
         }
-        else if(verification == false)
+        else if (verification == false)
         {
             Console.WriteLine("The book you are looking for is not in our database");
         }
@@ -330,7 +347,7 @@ Description: {neededBook.Description}
             string? discount = Console.ReadLine();
             bool verifyElement = isDouble(discount);
 
-            if(verifyElement == false)
+            if (verifyElement == false)
             {
                 Console.WriteLine("You must write a proper value");
             }
@@ -338,7 +355,7 @@ Description: {neededBook.Description}
             {
                 double discountD = Convert.ToDouble(discount);
                 int bookFound = Books.FindIndex(book1 => book1.Title == book);
-                Double totalValue = (Books[bookFound].Price) -(Books[bookFound].Price * (discountD/100));
+                Double totalValue = (Books[bookFound].Price) - (Books[bookFound].Price * (discountD / 100));
 
                 Console.WriteLine(@$"
 Name: {book}
@@ -346,7 +363,7 @@ Original value: {Books[bookFound].Price}$
 Discount Value: {discountD}%
 Total Value: {totalValue}$
 ");
-Books[bookFound].Price = totalValue;
+                Books[bookFound].Price = totalValue;
 
             }
         }
@@ -358,20 +375,175 @@ Books[bookFound].Price = totalValue;
         string? book = Console.ReadLine().ToLower();
         bool verification = verifyExistence(book);
 
-        if(verification == false)
+        if (verification == false)
         {
             Console.WriteLine("The book does not exist in our database");
         }
-        else if(string.IsNullOrWhiteSpace(book))
+        else if (string.IsNullOrWhiteSpace(book))
         {
             Console.WriteLine("You must write a proper value");
         }
         else
         {
-            int bookId = Books.FindIndex(book1=>book1.Title == book);
+            int bookId = Books.FindIndex(book1 => book1.Title == book);
             Books.RemoveAt(bookId);
             Console.WriteLine("The book has been erased succesfully");
         }
+    }
+
+    private double ChooseOrder()
+    {
+        Console.Write(
+@"1.Ascendant
+2.Descendant
+
+Choose the order you want to see your results:");
+        string? number = Console.ReadLine();
+
+        if (isDouble(number) == true && isInrange(1, 2, Convert.ToDouble(number)))
+        {
+            return Convert.ToDouble(number);
+        }
+        else if (isDouble(number) == false || string.IsNullOrWhiteSpace(number) == true)
+        {
+            Console.WriteLine("The value written down is not a number");
+            return 0;
+        }
+        else
+        {
+            Console.WriteLine("You must write a number in the range");
+            return 0;
+        }
+
+    }
+    private void SearchByTitle()
+    {
+        Console.Write("Enter the name of the book you are looking for: ");
+        string? book = Console.ReadLine().ToLower();
+        var foundBook = Books.Where(book1 => book1.Title == book).Take(1).ToList();
+
+        if(foundBook.Count()>=1)
+        {
+            Console.WriteLine("This is the book you are looking for: ");
+            betterForEachStructure(foundBook);
+        }
+        else
+        {
+            Console.WriteLine("The book you are looking for is not in the database");
+        }
+
+    }
+    private void SearchByAuthor()
+    {
+        Console.Write("Enter the name of the Author you are looking for: ");
+        string? author = Console.ReadLine().ToLower();
+        bool authorExistence = Books.Any(book => book.Author == author);
+        double order = ChooseOrder();
+
+        if (order == 1 && authorExistence == true)
+        {
+            var foundBook = Books.Where(book1 => book1.Author == author).OrderBy(book => book.Title).ToList();
+            Console.WriteLine($"These are all the books that were written by: {author}");
+            betterForEachStructure(foundBook);
+        }
+        else if (order == 2 && authorExistence == true)
+        {
+            var foundBook = Books.Where(book1 => book1.Author == author).OrderByDescending(book => book.Title).ToList();
+            Console.WriteLine($"These are all the books that were written by: {author}");
+            betterForEachStructure(foundBook);
+        }
+        else if (authorExistence == false)
+        {
+            Console.WriteLine("The author does not exist");
+        }
+        else
+        {
+            Console.WriteLine("You must choose an option in range");
+        }
+    }
+    private void SearchByPrice()
+    {
+        Console.Write("Enter the minimum price");
+        string? minimumPrice = Console.ReadLine();
+        bool verificationMinimumPrice = isDouble(minimumPrice);
+
+        Console.Write("Enter the maximum price");
+        string? maximumPrice = Console.ReadLine();
+        bool verificationMaximumPrice = isDouble(maximumPrice);
+
+        if (verificationMaximumPrice == false || verificationMinimumPrice == false)
+        {
+            Console.WriteLine("You must write a valid number");
+        }
+        else
+        {
+            double order = ChooseOrder();                
+            double minimumPriceD = Convert.ToDouble(minimumPrice);
+            double maximumPriceD = Convert.ToDouble(maximumPrice);
+            if (order == 1)
+            {
+                var booksInPriceRange = Books.Where(book => book.Price >= minimumPriceD && book.Price <= maximumPriceD).OrderBy(book => book.Price).ToList();
+                Console.WriteLine($"These are all the books in the range of {minimumPriceD}$ and {maximumPriceD}$");
+                betterForEachStructure(booksInPriceRange);
+            }
+            else if(order == 2)
+            {
+                var booksInPriceRangeDescending = Books.Where(book => book.Price >= minimumPriceD && book.Price <= maximumPriceD).OrderByDescending(book => book.Price).ToList();
+                Console.WriteLine($"These are all the books in the range of {minimumPriceD}$ and {maximumPriceD}$");
+                betterForEachStructure(booksInPriceRangeDescending);
+            }
+            else
+            {
+                Console.WriteLine("Your choice is out of range");
+            }
+
+        }
+    }
+
+    public void SearchABook()
+    {
+        Console.Write(@$"1.Title
+2.Author
+3.Price
+4.Time lapse
+5.Gender
+6.ISBN
+
+Enter the number of the option to search for:");
+        string? option = Console.ReadLine();
+        bool verification = isDouble(option);
+
+        if (verification == false)
+        {
+            Console.WriteLine("You must write a number");
+        }
+        else if (isInrange(1, 6, Convert.ToDouble(option)) == false)
+        {
+            Console.WriteLine("You must write an option that is inside the range");
+        }
+        else
+        {
+            double optionD = Convert.ToDouble(option);
+            switch (optionD)
+            {
+                case (1):
+                    SearchByTitle();
+                    break;
+                case (2):
+                    SearchByAuthor();
+                    break;
+                case (3):
+                    SearchByPrice();
+                    break;
+                case (4):
+                    break;
+                case (5):
+                    break;
+                case (6):
+                    break;
+            }
+        }
+
     }
 
 }
