@@ -7,7 +7,7 @@ namespace LibraryManagementSystem.Models;
 
 public class Library
 {
-    private List<Book> Books;
+    public List<Book> Books;
 
 
     public Library()
@@ -84,5 +84,13 @@ public class Library
             Console.WriteLine("The book was added successfully");
         }
 
+    }
+
+    public void ShowList()
+    {
+        foreach(Book book in Books)
+        {
+            Console.WriteLine($"Title:{book.Title} Publication Date:{book.PublicationTime.ToString("yyyy/MM/dd")} Author: {book.Author} ISBN: {book.ISBN} Gender: {book.Gender} Price: {book.Price} Description: {book.Description} ");
+        }
     }
 }
