@@ -351,5 +351,28 @@ Books[bookFound].Price = totalValue;
             }
         }
     }
+
+    public void DeleteBook()
+    {
+        Console.Write("Enter the name of the book that you wish to erase: ");
+        string? book = Console.ReadLine().ToLower();
+        bool verification = verifyExistence(book);
+
+        if(verification == false)
+        {
+            Console.WriteLine("The book does not exist in our database");
+        }
+        else if(string.IsNullOrWhiteSpace(book))
+        {
+            Console.WriteLine("You must write a proper value");
+        }
+        else
+        {
+            int bookId = Books.FindIndex(book1=>book1.Title == book);
+            Books.RemoveAt(bookId);
+            Console.WriteLine("The book has been erased succesfully");
+        }
+    }
+
 }
 
