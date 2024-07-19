@@ -80,7 +80,7 @@ public class Library
 
     }
 
-    public void betterForEachStructure(List<Book> books)
+    private void betterForEachStructure(List<Book> books)
     {
 Console.WriteLine(@"_______________________________________________________________________________________________________________________________________________________________________________________________________________________
 |                  Title                 |    R.Date    |          Author            |         ISBN          |         Gender         | Price  |                               Description                             |
@@ -248,4 +248,37 @@ Console.WriteLine(@"|________________________________________|______________|___
             }
         }
     }
+
+    public void verifyIfABookIsRecent()
+    {
+        Console.Write("Write down the name of the book: ");
+        string? book = Console.ReadLine().ToLower();
+        bool coincidences = Books.Any(book1 => book1.Title == book);
+
+
+        if(string.IsNullOrWhiteSpace(book))
+        {
+            Console.WriteLine("Please write a value");
+        }
+        else if(coincidences== false)
+        {
+            Console.WriteLine("The book that you are trying to look for is not in our database");
+        }
+        else
+        {
+            var FoundBook = Books.FirstOrDefault(book1 => book1.Title == book);
+            int Difference = DateTime.Now.Year - FoundBook.PublicationTime.Year ;
+            bool isRecent = DateTime.Now.Year - FoundBook.PublicationTime.Year  <=5;
+
+            if (isRecent == false)
+            {
+                Console.WriteLine($"{book} is not recent because it has {Difference} years of difference");
+            }
+            else
+            {
+                Console.WriteLine($"{book} is recent because it has {Difference} years of difference");
+            }
+        }
+    }
 }
+
