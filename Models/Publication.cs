@@ -13,7 +13,7 @@ public class Publication
         get{return PTitle;}
         set{PTitle = value.ToLower();}
     }
-    public DateTime PublicationYear {get; set;}
+    public DateTime PublicationTime {get; set;}
 
 
     private string TextToLowerCase(string? Word)
@@ -22,9 +22,9 @@ public class Publication
         return LCWord;
     }
 
-    public Publication(string? Title, DateTime PublicationYear)
+    public Publication(string? Title, DateTime PublicationTime)
     {
         this.Title = TextToLowerCase(Title);
-        this.PublicationYear = PublicationYear;
+        this.PublicationTime = PublicationTime;
     }
 }
