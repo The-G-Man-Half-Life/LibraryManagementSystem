@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 
 namespace LibraryManagementSystem.Models;
@@ -309,6 +310,46 @@ Description: {neededBook.Description}
         }
     }
 
-    
+    public void ApplyDiscounts()
+    {
+        Console.WriteLine("Enter the name of your book: ");
+        string? book = Console.ReadLine();
+        bool verification = verifyExistence(book);
+
+        if(string.IsNullOrWhiteSpace(book))
+        {
+            Console.WriteLine("You must write a proper value");
+        }
+        else if(verification == false)
+        {
+            Console.WriteLine("The book you are looking for is not in our database");
+        }
+        else
+        {
+            Console.WriteLine("Enter only the value of the discount: ");
+            string? discount = Console.ReadLine();
+            bool verifyElement = isDouble(discount);
+
+            if(verifyElement == false)
+            {
+                Console.WriteLine("You must write a proper value");
+            }
+            else
+            {
+                double discountD = Convert.ToDouble(discount);
+                int bookFound = Books.FindIndex(book1 => book1.Title == book);
+                Double totalValue = (Books[bookFound].Price) -(Books[bookFound].Price * (discountD/100));
+
+                Console.WriteLine(@$"
+Name: {book}
+Original value: {Books[bookFound].Price}$
+Discount Value: {discountD}%
+Total Value: {totalValue}$
+");
+Books[bookFound].Price = totalValue;
+
+            }
+        }
+    }
 }
 
