@@ -38,7 +38,6 @@ public class Library
     {
         if (num3 < num1 || num3 > num2)
         {
-            Console.WriteLine("The number written is outside of range");
             return false;
         }
         else
@@ -456,11 +455,7 @@ Choose the order you want to see your results:");
         {
             Console.WriteLine("The author does not exist");
         }
-        else
-        {
-            Console.WriteLine("You must choose an option in range");
         }
-    }
     private void SearchByPrice()
     {
         Console.Write("Enter the minimum price");
@@ -476,10 +471,11 @@ Choose the order you want to see your results:");
             Console.WriteLine("You must write a valid number");
         }
         else
-        {
-            double order = ChooseOrder();                
+        {   
             double minimumPriceD = Convert.ToDouble(minimumPrice);
             double maximumPriceD = Convert.ToDouble(maximumPrice);
+            double order = ChooseOrder();                
+
             if (order == 1)
             {
                 var booksInPriceRange = Books.Where(book => book.Price >= minimumPriceD && book.Price <= maximumPriceD).OrderBy(book => book.Price).ToList();
@@ -492,14 +488,84 @@ Choose the order you want to see your results:");
                 Console.WriteLine($"These are all the books in the range of {minimumPriceD}$ and {maximumPriceD}$");
                 betterForEachStructure(booksInPriceRangeDescending);
             }
-            else
-            {
-                Console.WriteLine("Your choice is out of range");
-            }
-
         }
     }
+    private void SearchByTimeLapse()
+    {
+        Console.Write("Enter the Starting date (YYYY/MM/DD): ");
+        string? startingDate = Console.ReadLine();
+        bool verificationStartingDate = CanItbeADate(startingDate);
 
+        Console.Write("Enter the finishing date (YYYY/MM//DD): ");
+        string? finishingDate = Console.ReadLine();
+        bool verificationFinishingDate = CanItbeADate(finishingDate);
+
+        if (verificationStartingDate == false || verificationFinishingDate == false)
+        {
+            Console.WriteLine("You must write a valid number");
+        }
+        else
+        {   
+            DateTime startingDateD = Convert.ToDateTime(startingDate);
+            DateTime finishingDateD = Convert.ToDateTime(finishingDate);
+            double order = ChooseOrder();                
+
+            if (order == 1)
+            {
+                var booksInDateRange = Books.Where(book => book.PublicationTime >= startingDateD && book.PublicationTime <= finishingDateD).OrderBy(book => book.PublicationTime).ToList();
+                Console.WriteLine($"These are all the books in the range of {startingDateD.ToString("yyyy/MM/dd")} and {finishingDateD.ToString("yyyy/MM/dd")}");
+                betterForEachStructure(booksInDateRange);
+            }
+            else if(order == 2)
+            {
+                var booksInDateRangeDescending = Books.Where(book => book.PublicationTime >= startingDateD && book.PublicationTime <= finishingDateD).OrderByDescending(book => book.PublicationTime).ToList();
+                Console.WriteLine($"These are all the books in the range of {startingDateD.ToString("yyyy/MM/dd")} and {finishingDateD.ToString("yyyy/MM/dd")}");
+                betterForEachStructure(booksInDateRangeDescending);
+            }
+        }
+
+    }
+    private void SearchByGender()
+    {
+        Console.Write("Enter the name of the Gender you are looking for: ");
+        string? Gender = Console.ReadLine().ToLower();
+        bool genderExistence = Books.Any(book => book.Gender.Contains(Gender));
+        double order = ChooseOrder();
+
+        if (order == 1 && genderExistence == true)
+        {
+            var foundBook = Books.Where(book1 => book1.Gender.Contains(Gender)).OrderBy(book => book.Gender).ToList();
+            Console.WriteLine($"These are all the books with this: {Gender}");
+            betterForEachStructure(foundBook);
+        }
+        else if (order == 2 && genderExistence == true)
+        {
+            var foundBook = Books.Where(book1 => book1.Gender.Contains(Gender)).OrderByDescending(book => book.Gender).ToList();
+            Console.WriteLine($"These are all the books with this: {Gender}");
+            betterForEachStructure(foundBook);
+        }
+        else if (genderExistence == false)
+        {
+            Console.WriteLine("The genre does not exist in the database");
+        }
+
+    }
+    private void SearchByISBN()
+    {
+        Console.Write("Enter the ISBN of the book you are looking for: ");
+        string? ISBN = Console.ReadLine().ToLower();
+        var foundBook = Books.Where(book1 => book1.ISBN == ISBN).Take(1).ToList();
+
+        if(foundBook.Count()>=1)
+        {
+            Console.WriteLine("This is the book you are looking for: ");
+            betterForEachStructure(foundBook);
+        }
+        else
+        {
+            Console.WriteLine("The book you are looking for is not in the database");
+        }
+    }
     public void SearchABook()
     {
         Console.Write(@$"1.Title
@@ -536,10 +602,13 @@ Enter the number of the option to search for:");
                     SearchByPrice();
                     break;
                 case (4):
+                    SearchByTimeLapse();
                     break;
                 case (5):
+                    SearchByGender();
                     break;
                 case (6):
+                    SearchByISBN();
                     break;
             }
         }
