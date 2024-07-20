@@ -1,7 +1,8 @@
 ﻿using LibraryManagementSystem.Models;
 
 var library = new Library();
-
+void InsertingBooks()
+{
 Book book1 = new Book(
     Title: "1984",
     PublicationTime: new DateTime(1949, 6, 8),
@@ -278,5 +279,102 @@ library.Books.Add(book23);
 library.Books.Add(book24);
 library.Books.Add(book25);
 
-library.DeleteBook();
+}
 
+InsertingBooks();
+
+void pressToContinue()
+{
+    Console.Write("Press any keybind to continue");
+    Console.ReadKey();
+}
+
+void StopSystem()
+{
+    Console.WriteLine("See you later");
+}
+
+bool flag = true;
+while (flag)
+{
+    Console.Clear();
+    Console.WriteLine(@"╔══════════════════════════════════╗
+║           MENU PRINCIPAL         ║
+╠══════════════════════════════════╣
+║ 1. Add a new book                ║
+╠══════════════════════════════════╣
+║ 2. Show list of books            ║
+╠══════════════════════════════════╣
+║ 3. Verify if a book is recent    ║
+╠══════════════════════════════════╣
+║ 4. Show a book description       ║
+╠══════════════════════════════════╣
+║ 5. Apply discounts to a book     ║
+╠══════════════════════════════════╣
+║ 6. Delete a book                 ║
+╠══════════════════════════════════╣
+║ 7. Search a book                 ║
+╠══════════════════════════════════╣
+║ 8. Get out of the system         ║
+╚══════════════════════════════════╝
+");
+Console.Write("Choose the option you want to execute: ");
+string? option = Console.ReadLine();
+switch (option)
+{
+    case("1"):
+    Console.Clear();
+    library.AddANewBook();
+    pressToContinue();
+    break;
+
+    case("2"):
+    Console.Clear();
+    library.ShowBooks();
+    pressToContinue();
+    break;
+
+    case("3"):
+    Console.Clear();
+    library.VerifyIfABookIsRecent();
+    pressToContinue();
+    break;
+
+    case("4"):
+    Console.Clear();
+    library.ShoWDescription();
+    pressToContinue();
+    break;
+
+    case("5"):
+    Console.Clear();
+    library.ApplyDiscounts();
+    pressToContinue();
+    break;
+
+    case("6"):
+    Console.Clear();
+    library.DeleteBook();
+    pressToContinue();
+    break;
+
+    case("7"):
+    Console.Clear();
+    library.SearchABook();
+    pressToContinue();
+    break;
+
+    case("8"):
+    Console.Clear();
+    StopSystem();
+    flag = false;
+    break;
+
+    default:
+    Console.Clear();
+    Console.WriteLine("Choose an appropiate option");
+    pressToContinue();
+
+    break;
+}
+}
