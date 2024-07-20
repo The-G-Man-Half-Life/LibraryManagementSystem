@@ -19,7 +19,7 @@ public class Library
         Books = new List<Book>();
     }
 
-
+    //verifications
     private bool CanItbeADate(string? Date)
     {
         DateTime DateOfficial;
@@ -33,7 +33,6 @@ public class Library
             return false;
         }
     }
-
     private bool isInrange(double num1, double num2, double num3)
     {
         if (num3 < num1 || num3 > num2)
@@ -51,6 +50,249 @@ public class Library
         bool doubleAble = double.TryParse(Number, out number);
         return doubleAble;
     }
+    public bool verifyExistence(string? book)
+    {
+        bool coincidences = Books.Any(book1 => book1.Title == book);
+        return coincidences;
+    }
+
+    //secondary functions in general
+    private double ChooseOrder()
+    {
+        Console.Write(
+@"1.Ascendant
+2.Descendant
+
+Choose the order you want to see your results:");
+        string? number = Console.ReadLine();
+
+        if (isDouble(number) == true && isInrange(1, 2, Convert.ToDouble(number)))
+        {
+            return Convert.ToDouble(number);
+        }
+        else if (isDouble(number) == false || string.IsNullOrWhiteSpace(number) == true)
+        {
+            Console.WriteLine("The value written down is not a number");
+            return 0;
+        }
+        else
+        {
+            Console.WriteLine("You must write a number in the range");
+            return 0;
+        }
+    }
+    private void betterForEachStructure(List<Book> books)
+    {
+        Console.WriteLine(@"_______________________________________________________________________________________________________________________________________________________________________________________________________________________
+|                  Title                 |    R.Date    |          Author            |         ISBN          |         Gender         | Price  |                               Description                             |
+|________________________________________|______________|____________________________|_______________________|________________________|________|_______________________________________________________________________|");
+
+        foreach (var book in books)
+        {
+            Console.WriteLine(@$"|  {book.Title,-38}|  {book.PublicationTime.ToString("yyyy/MM/dd"),-12}|  {book.Author,-26}|  {book.ISBN,-21}|  {book.Gender,-22}|  {book.Price,-6}|  {book.Description,-69}|");
+        }
+
+        Console.WriteLine(@"|________________________________________|______________|____________________________|_______________________|________________________|________|_______________________________________________________________________|");
+    }
+
+    
+    //secondary funcstions of showlist
+    private void ShowReleaseDateByAscendant()
+    {
+        var listReleaseDateAscendant = Books.OrderBy(book => book.PublicationTime).ToList();
+        betterForEachStructure(listReleaseDateAscendant);
+    }
+    private void ShowReleaseDateByDescendant()
+    {
+        var listReleaseDateDescendant = Books.OrderByDescending(book => book.PublicationTime).ToList();
+        betterForEachStructure(listReleaseDateDescendant);
+    }
+    private void ShowTitleByAscendant()
+    {
+        var listTitleAscendant = Books.OrderBy(book => book.Title).ToList();
+        betterForEachStructure(listTitleAscendant);
+    }
+    private void ShowTitleByDescendant()
+    {
+        var listTitleDescendant = Books.OrderByDescending(book => book.Title).ToList();
+        betterForEachStructure(listTitleDescendant);
+    }
+    private void ShowAuthorByAscendant()
+    {
+        var listAuthorAscendant = Books.OrderBy(book => book.Author).ToList();
+        betterForEachStructure(listAuthorAscendant);
+    }
+    private void ShowAuthorByDescendant()
+    {
+        var listAuthorDescendant = Books.OrderByDescending(book => book.Author).ToList();
+        betterForEachStructure(listAuthorDescendant);
+    }
+    private void ShowPriceByAscendant()
+    {
+        var listPriceAscendant = Books.OrderBy(book => book.Price).ToList();
+
+        betterForEachStructure(listPriceAscendant);
+    }
+    private void ShowPriceByDescendant()
+    {
+        var listPriceDescendant = Books.OrderByDescending(book => book.Price).ToList();
+        betterForEachStructure(listPriceDescendant);
+    }
+
+    //secondary functions of search
+    private void SearchByTitle()
+    {
+        Console.Write("Enter the name of the book you are looking for: ");
+        string? book = Console.ReadLine().ToLower();
+        var foundBook = Books.Where(book1 => book1.Title == book).Take(1).ToList();
+
+        if (foundBook.Count() >= 1)
+        {
+            Console.WriteLine("This is the book you are looking for: ");
+            betterForEachStructure(foundBook);
+        }
+        else
+        {
+            Console.WriteLine("The book you are looking for is not in the database");
+        }
+
+    }
+    private void SearchByAuthor()
+    {
+        Console.Write("Enter the name of the Author you are looking for: ");
+        string? author = Console.ReadLine().ToLower();
+        bool authorExistence = Books.Any(book => book.Author == author);
+        double order = ChooseOrder();
+
+        if (order == 1 && authorExistence == true)
+        {
+            var foundBook = Books.Where(book1 => book1.Author == author).OrderBy(book => book.Title).ToList();
+            Console.WriteLine($"These are all the books that were written by: {author}");
+            betterForEachStructure(foundBook);
+        }
+        else if (order == 2 && authorExistence == true)
+        {
+            var foundBook = Books.Where(book1 => book1.Author == author).OrderByDescending(book => book.Title).ToList();
+            Console.WriteLine($"These are all the books that were written by: {author}");
+            betterForEachStructure(foundBook);
+        }
+        else if (authorExistence == false)
+        {
+            Console.WriteLine("The author does not exist");
+        }
+    }
+    private void SearchByPrice()
+    {
+        Console.Write("Enter the minimum price");
+        string? minimumPrice = Console.ReadLine();
+        bool verificationMinimumPrice = isDouble(minimumPrice);
+
+        Console.Write("Enter the maximum price");
+        string? maximumPrice = Console.ReadLine();
+        bool verificationMaximumPrice = isDouble(maximumPrice);
+
+        if (verificationMaximumPrice == false || verificationMinimumPrice == false)
+        {
+            Console.WriteLine("You must write a valid number");
+        }
+        else
+        {
+            double minimumPriceD = Convert.ToDouble(minimumPrice);
+            double maximumPriceD = Convert.ToDouble(maximumPrice);
+            double order = ChooseOrder();
+
+            if (order == 1)
+            {
+                var booksInPriceRange = Books.Where(book => book.Price >= minimumPriceD && book.Price <= maximumPriceD).OrderBy(book => book.Price).ToList();
+                Console.WriteLine($"These are all the books in the range of {minimumPriceD}$ and {maximumPriceD}$");
+                betterForEachStructure(booksInPriceRange);
+            }
+            else if (order == 2)
+            {
+                var booksInPriceRangeDescending = Books.Where(book => book.Price >= minimumPriceD && book.Price <= maximumPriceD).OrderByDescending(book => book.Price).ToList();
+                Console.WriteLine($"These are all the books in the range of {minimumPriceD}$ and {maximumPriceD}$");
+                betterForEachStructure(booksInPriceRangeDescending);
+            }
+        }
+    }
+    private void SearchByTimeLapse()
+    {
+        Console.Write("Enter the Starting date (YYYY/MM/DD): ");
+        string? startingDate = Console.ReadLine();
+        bool verificationStartingDate = CanItbeADate(startingDate);
+
+        Console.Write("Enter the finishing date (YYYY/MM//DD): ");
+        string? finishingDate = Console.ReadLine();
+        bool verificationFinishingDate = CanItbeADate(finishingDate);
+
+        if (verificationStartingDate == false || verificationFinishingDate == false)
+        {
+            Console.WriteLine("You must write a valid number");
+        }
+        else
+        {
+            DateTime startingDateD = Convert.ToDateTime(startingDate);
+            DateTime finishingDateD = Convert.ToDateTime(finishingDate);
+            double order = ChooseOrder();
+
+            if (order == 1)
+            {
+                var booksInDateRange = Books.Where(book => book.PublicationTime >= startingDateD && book.PublicationTime <= finishingDateD).OrderBy(book => book.PublicationTime).ToList();
+                Console.WriteLine($"These are all the books in the range of {startingDateD.ToString("yyyy/MM/dd")} and {finishingDateD.ToString("yyyy/MM/dd")}");
+                betterForEachStructure(booksInDateRange);
+            }
+            else if (order == 2)
+            {
+                var booksInDateRangeDescending = Books.Where(book => book.PublicationTime >= startingDateD && book.PublicationTime <= finishingDateD).OrderByDescending(book => book.PublicationTime).ToList();
+                Console.WriteLine($"These are all the books in the range of {startingDateD.ToString("yyyy/MM/dd")} and {finishingDateD.ToString("yyyy/MM/dd")}");
+                betterForEachStructure(booksInDateRangeDescending);
+            }
+        }
+
+    }
+    private void SearchByGender()
+    {
+        Console.Write("Enter the name of the Gender you are looking for: ");
+        string? Gender = Console.ReadLine().ToLower();
+        bool genderExistence = Books.Any(book => book.Gender.Contains(Gender));
+        double order = ChooseOrder();
+
+        if (order == 1 && genderExistence == true)
+        {
+            var foundBook = Books.Where(book1 => book1.Gender.Contains(Gender)).OrderBy(book => book.Gender).ToList();
+            Console.WriteLine($"These are all the books with this: {Gender}");
+            betterForEachStructure(foundBook);
+        }
+        else if (order == 2 && genderExistence == true)
+        {
+            var foundBook = Books.Where(book1 => book1.Gender.Contains(Gender)).OrderByDescending(book => book.Gender).ToList();
+            Console.WriteLine($"These are all the books with this: {Gender}");
+            betterForEachStructure(foundBook);
+        }
+        else if (genderExistence == false)
+        {
+            Console.WriteLine("The genre does not exist in the database");
+        }
+
+    }
+    private void SearchByISBN()
+    {
+        Console.Write("Enter the ISBN of the book you are looking for: ");
+        string? ISBN = Console.ReadLine().ToLower();
+        var foundBook = Books.Where(book1 => book1.ISBN == ISBN).Take(1).ToList();
+
+        if (foundBook.Count() >= 1)
+        {
+            Console.WriteLine("This is the book you are looking for: ");
+            betterForEachStructure(foundBook);
+        }
+        else
+        {
+            Console.WriteLine("The book you are looking for is not in the database");
+        }
+    }
+    
+    //main functions
     public void AddANewBook()
     {
         Console.Write("Write down the Title of the book: ");
@@ -95,69 +337,8 @@ public class Library
         }
 
     }
-    public bool verifyExistence(string? book)
-    {
-        bool coincidences = Books.Any(book1 => book1.Title == book);
-        return coincidences;
-    }
 
-    private void betterForEachStructure(List<Book> books)
-    {
-        Console.WriteLine(@"_______________________________________________________________________________________________________________________________________________________________________________________________________________________
-|                  Title                 |    R.Date    |          Author            |         ISBN          |         Gender         | Price  |                               Description                             |
-|________________________________________|______________|____________________________|_______________________|________________________|________|_______________________________________________________________________|");
-
-        foreach (var book in books)
-        {
-            Console.WriteLine(@$"|  {book.Title,-38}|  {book.PublicationTime.ToString("yyyy/MM/dd"),-12}|  {book.Author,-26}|  {book.ISBN,-21}|  {book.Gender,-22}|  {book.Price,-6}|  {book.Description,-69}|");
-        }
-
-        Console.WriteLine(@"|________________________________________|______________|____________________________|_______________________|________________________|________|_______________________________________________________________________|");
-    }
-
-    private void ShowReleaseDateByAscendant()
-    {
-        var listReleaseDateAscendant = Books.OrderBy(book => book.PublicationTime).ToList();
-        betterForEachStructure(listReleaseDateAscendant);
-    }
-    private void ShowReleaseDateByDescendant()
-    {
-        var listReleaseDateDescendant = Books.OrderByDescending(book => book.PublicationTime).ToList();
-        betterForEachStructure(listReleaseDateDescendant);
-    }
-    private void ShowTitleByAscendant()
-    {
-        var listTitleAscendant = Books.OrderBy(book => book.Title).ToList();
-        betterForEachStructure(listTitleAscendant);
-    }
-    private void ShowTitleByDescendant()
-    {
-        var listTitleDescendant = Books.OrderByDescending(book => book.Title).ToList();
-        betterForEachStructure(listTitleDescendant);
-    }
-    private void ShowAuthorByAscendant()
-    {
-        var listAuthorAscendant = Books.OrderBy(book => book.Author).ToList();
-        betterForEachStructure(listAuthorAscendant);
-    }
-    private void ShowAuthorByDescendant()
-    {
-        var listAuthorDescendant = Books.OrderByDescending(book => book.Author).ToList();
-        betterForEachStructure(listAuthorDescendant);
-    }
-    private void ShowPriceByAscendant()
-    {
-        var listPriceAscendant = Books.OrderBy(book => book.Price).ToList();
-
-        betterForEachStructure(listPriceAscendant);
-    }
-    private void ShowPriceByDescendant()
-    {
-        var listPriceDescendant = Books.OrderByDescending(book => book.Price).ToList();
-        betterForEachStructure(listPriceDescendant);
-    }
-
-    public void ShowList()
+    public void ShowBooks()
     {
 
         Console.WriteLine(
@@ -171,24 +352,16 @@ public class Library
         string? option = Console.ReadLine();
         bool optionVerification = isDouble(option);
 
-        Console.WriteLine(
-@"1.Ascendant
-2.Descendant
-");
-        Console.Write("Insert the number of your Prefered order: ");
-        string? option2 = Console.ReadLine();
-        bool option2Verification = isDouble(option2);
+        double option2=ChooseOrder();
 
-
-        if (optionVerification == false || option2Verification == false)
+        if (optionVerification == false )
         {
-            Console.WriteLine("Debes de escribir un numero apropiado y dentro del rango");
+            Console.WriteLine("You must write a valid number");
         }
         else
         {
             double optionD = Convert.ToDouble(option);
-            double option2D = Convert.ToDouble(option2);
-            if ((optionD < 1 || optionD > 4) || (option2D < 1 || option2D > 2))
+            if ((optionD < 1 || optionD > 4) || (option2 < 1 || option2 > 2))
             {
                 Console.WriteLine("Your choices must be in range of the options");
             }
@@ -198,7 +371,7 @@ public class Library
                 {
                     case (1):
                         {
-                            switch (option2D)
+                            switch (option2)
                             {
                                 case (1):
                                     {
@@ -215,7 +388,7 @@ public class Library
                         }
                     case (2):
                         {
-                            switch (option2D)
+                            switch (option2)
                             {
                                 case (1):
                                     {
@@ -233,7 +406,7 @@ public class Library
                         }
                     case (3):
                         {
-                            switch (option2D)
+                            switch (option2)
                             {
                                 case (1):
                                     {
@@ -250,7 +423,7 @@ public class Library
                         }
                     case (4):
                         {
-                            switch (option2D)
+                            switch (option2)
                             {
                                 case (1):
                                     {
@@ -270,7 +443,7 @@ public class Library
         }
     }
 
-    public void verifyIfABookIsRecent()
+    public void VerifyIfABookIsRecent()
     {
         Console.Write("Write down the name of the book: ");
         string? book = Console.ReadLine().ToLower();
@@ -390,182 +563,6 @@ Total Value: {totalValue}$
         }
     }
 
-    private double ChooseOrder()
-    {
-        Console.Write(
-@"1.Ascendant
-2.Descendant
-
-Choose the order you want to see your results:");
-        string? number = Console.ReadLine();
-
-        if (isDouble(number) == true && isInrange(1, 2, Convert.ToDouble(number)))
-        {
-            return Convert.ToDouble(number);
-        }
-        else if (isDouble(number) == false || string.IsNullOrWhiteSpace(number) == true)
-        {
-            Console.WriteLine("The value written down is not a number");
-            return 0;
-        }
-        else
-        {
-            Console.WriteLine("You must write a number in the range");
-            return 0;
-        }
-
-    }
-    private void SearchByTitle()
-    {
-        Console.Write("Enter the name of the book you are looking for: ");
-        string? book = Console.ReadLine().ToLower();
-        var foundBook = Books.Where(book1 => book1.Title == book).Take(1).ToList();
-
-        if(foundBook.Count()>=1)
-        {
-            Console.WriteLine("This is the book you are looking for: ");
-            betterForEachStructure(foundBook);
-        }
-        else
-        {
-            Console.WriteLine("The book you are looking for is not in the database");
-        }
-
-    }
-    private void SearchByAuthor()
-    {
-        Console.Write("Enter the name of the Author you are looking for: ");
-        string? author = Console.ReadLine().ToLower();
-        bool authorExistence = Books.Any(book => book.Author == author);
-        double order = ChooseOrder();
-
-        if (order == 1 && authorExistence == true)
-        {
-            var foundBook = Books.Where(book1 => book1.Author == author).OrderBy(book => book.Title).ToList();
-            Console.WriteLine($"These are all the books that were written by: {author}");
-            betterForEachStructure(foundBook);
-        }
-        else if (order == 2 && authorExistence == true)
-        {
-            var foundBook = Books.Where(book1 => book1.Author == author).OrderByDescending(book => book.Title).ToList();
-            Console.WriteLine($"These are all the books that were written by: {author}");
-            betterForEachStructure(foundBook);
-        }
-        else if (authorExistence == false)
-        {
-            Console.WriteLine("The author does not exist");
-        }
-        }
-    private void SearchByPrice()
-    {
-        Console.Write("Enter the minimum price");
-        string? minimumPrice = Console.ReadLine();
-        bool verificationMinimumPrice = isDouble(minimumPrice);
-
-        Console.Write("Enter the maximum price");
-        string? maximumPrice = Console.ReadLine();
-        bool verificationMaximumPrice = isDouble(maximumPrice);
-
-        if (verificationMaximumPrice == false || verificationMinimumPrice == false)
-        {
-            Console.WriteLine("You must write a valid number");
-        }
-        else
-        {   
-            double minimumPriceD = Convert.ToDouble(minimumPrice);
-            double maximumPriceD = Convert.ToDouble(maximumPrice);
-            double order = ChooseOrder();                
-
-            if (order == 1)
-            {
-                var booksInPriceRange = Books.Where(book => book.Price >= minimumPriceD && book.Price <= maximumPriceD).OrderBy(book => book.Price).ToList();
-                Console.WriteLine($"These are all the books in the range of {minimumPriceD}$ and {maximumPriceD}$");
-                betterForEachStructure(booksInPriceRange);
-            }
-            else if(order == 2)
-            {
-                var booksInPriceRangeDescending = Books.Where(book => book.Price >= minimumPriceD && book.Price <= maximumPriceD).OrderByDescending(book => book.Price).ToList();
-                Console.WriteLine($"These are all the books in the range of {minimumPriceD}$ and {maximumPriceD}$");
-                betterForEachStructure(booksInPriceRangeDescending);
-            }
-        }
-    }
-    private void SearchByTimeLapse()
-    {
-        Console.Write("Enter the Starting date (YYYY/MM/DD): ");
-        string? startingDate = Console.ReadLine();
-        bool verificationStartingDate = CanItbeADate(startingDate);
-
-        Console.Write("Enter the finishing date (YYYY/MM//DD): ");
-        string? finishingDate = Console.ReadLine();
-        bool verificationFinishingDate = CanItbeADate(finishingDate);
-
-        if (verificationStartingDate == false || verificationFinishingDate == false)
-        {
-            Console.WriteLine("You must write a valid number");
-        }
-        else
-        {   
-            DateTime startingDateD = Convert.ToDateTime(startingDate);
-            DateTime finishingDateD = Convert.ToDateTime(finishingDate);
-            double order = ChooseOrder();                
-
-            if (order == 1)
-            {
-                var booksInDateRange = Books.Where(book => book.PublicationTime >= startingDateD && book.PublicationTime <= finishingDateD).OrderBy(book => book.PublicationTime).ToList();
-                Console.WriteLine($"These are all the books in the range of {startingDateD.ToString("yyyy/MM/dd")} and {finishingDateD.ToString("yyyy/MM/dd")}");
-                betterForEachStructure(booksInDateRange);
-            }
-            else if(order == 2)
-            {
-                var booksInDateRangeDescending = Books.Where(book => book.PublicationTime >= startingDateD && book.PublicationTime <= finishingDateD).OrderByDescending(book => book.PublicationTime).ToList();
-                Console.WriteLine($"These are all the books in the range of {startingDateD.ToString("yyyy/MM/dd")} and {finishingDateD.ToString("yyyy/MM/dd")}");
-                betterForEachStructure(booksInDateRangeDescending);
-            }
-        }
-
-    }
-    private void SearchByGender()
-    {
-        Console.Write("Enter the name of the Gender you are looking for: ");
-        string? Gender = Console.ReadLine().ToLower();
-        bool genderExistence = Books.Any(book => book.Gender.Contains(Gender));
-        double order = ChooseOrder();
-
-        if (order == 1 && genderExistence == true)
-        {
-            var foundBook = Books.Where(book1 => book1.Gender.Contains(Gender)).OrderBy(book => book.Gender).ToList();
-            Console.WriteLine($"These are all the books with this: {Gender}");
-            betterForEachStructure(foundBook);
-        }
-        else if (order == 2 && genderExistence == true)
-        {
-            var foundBook = Books.Where(book1 => book1.Gender.Contains(Gender)).OrderByDescending(book => book.Gender).ToList();
-            Console.WriteLine($"These are all the books with this: {Gender}");
-            betterForEachStructure(foundBook);
-        }
-        else if (genderExistence == false)
-        {
-            Console.WriteLine("The genre does not exist in the database");
-        }
-
-    }
-    private void SearchByISBN()
-    {
-        Console.Write("Enter the ISBN of the book you are looking for: ");
-        string? ISBN = Console.ReadLine().ToLower();
-        var foundBook = Books.Where(book1 => book1.ISBN == ISBN).Take(1).ToList();
-
-        if(foundBook.Count()>=1)
-        {
-            Console.WriteLine("This is the book you are looking for: ");
-            betterForEachStructure(foundBook);
-        }
-        else
-        {
-            Console.WriteLine("The book you are looking for is not in the database");
-        }
-    }
     public void SearchABook()
     {
         Console.Write(@$"1.Title
