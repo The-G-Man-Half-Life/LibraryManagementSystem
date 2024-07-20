@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.VisualBasic;
 
 namespace LibraryManagementSystem.Models;
 public class Publication
@@ -12,7 +13,7 @@ public class Publication
         get{return PTitle;}
         set{PTitle = value.ToLower();}
     }
-    public DateOnly PublicationYear {get; set;}
+    public DateTime PublicationTime {get; set;}
 
 
     private string TextToLowerCase(string? Word)
@@ -21,10 +22,9 @@ public class Publication
         return LCWord;
     }
 
-
-    public Publication(string? Title, DateOnly PublicationYear)
+    public Publication(string? Title, DateTime PublicationTime)
     {
         this.Title = TextToLowerCase(Title);
-        this.PublicationYear = PublicationYear;
+        this.PublicationTime = PublicationTime;
     }
 }
